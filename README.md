@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="75" height="auto" src="https://services.kjnodes.com/assets/images/logos/n.png">
+  <img height="75" height="auto" src="https://services.kjnodes.com/assets/images/logos/nillion.png">
 </p>
 
 # Nillion Petnet Node Monitoring stack
