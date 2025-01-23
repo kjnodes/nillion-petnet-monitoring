@@ -3,12 +3,12 @@ volumes:
   grafana_data: {}
 
 networks:
-  avail-monitoring:
+  nillion-petnet-monitoring:
 
 services:
   prometheus:
     image: prom/prometheus:latest
-    container_name: avail-prometheus
+    container_name: nillion-petnet-prometheus
     volumes:
        - type: volume
          source: prometheus_data
@@ -22,34 +22,34 @@ services:
       - '--storage.tsdb.path=/prometheus'
       - '--web.enable-lifecycle'
     ports:
-      - 9090:9090
+      - 59090:9090
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     networks:
-      - avail-monitoring
+      - nillion-petnet-monitoring
     restart: always
 
   # default login credentials: admin/admin
   grafana:
     image: grafana/grafana:latest
     env_file: ./grafana/grafana.conf
-    container_name: avail-grafana
+    container_name: nillion-petnet-grafana
     volumes:
       - ./grafana/dashboards:/var/lib/grafana/dashboards
       - ./grafana/provisioning:/etc/grafana/provisioning
     ports:
-      - 9999:3000
+      - 59999:3000
     networks:
-      - avail-monitoring
+      - nillion-petnet-monitoring
     restart: always
 
   alertmanager:
     image: prom/alertmanager:latest
-    container_name: avail-alertmanager
+    container_name: nillion-petnet-alertmanager
     networks:
-      - avail-monitoring
+      - nillion-petnet-monitoring
     ports:
-      - 9093:9093
+      - 59093:9093
     volumes:
       - type: bind
         source: ./prometheus/alert_manager
