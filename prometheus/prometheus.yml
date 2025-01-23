@@ -19,7 +19,7 @@ scrape_configs:
     static_configs:
       - targets:
           - localhost:9090
-  - job_name: substrate
+  - job_name: nillion-petnet-node
     metrics_path: /metrics
     static_configs:
       - targets:
