@@ -1,0 +1,34 @@
+groups:
+  - name: Node Monitoring
+    rules:
+
+    - alert: TooFewPeers
+      expr: substrate_sync_peers < 2
+      for: 5m
+      labels:
+        severity: major
+      annotations:
+        description: 'The number of connected P2P peers has been below the defined threshold in the last 5 minutes.'
+
+    - alert: StalledBlocks
+      expr: increase(substrate_block_height{status="finalized"}[5m]) == 0
+      labels:
+        severity: critical
+      annotations:
+        description: 'Block production stalled. The node has not produced any blocks in the last 5 minutes.'
+
+    - alert: InstanceDown
+      expr: up == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        description: "Instance has been down for more than 1 minute."
+
+    - alert: OutOfSync
+      expr: sum by (instance)(substrate_block_height{status="sync_target"}) - sum by (instance)(substrate_block_height{status="finalized"}) > 2
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        description: "Node is out of sync for more than 5 minutes."

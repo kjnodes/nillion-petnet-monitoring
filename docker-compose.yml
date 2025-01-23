@@ -1,0 +1,63 @@
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
+
+networks:
+  avail-monitoring:
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: avail-prometheus
+    volumes:
+       - type: volume
+         source: prometheus_data
+         target: /prometheus
+       - type: bind
+         source: ./prometheus
+         target: /etc/prometheus
+         read_only: true 
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    ports:
+      - 9090:9090
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    networks:
+      - avail-monitoring
+    restart: always
+
+  # default login credentials: admin/admin
+  grafana:
+    image: grafana/grafana:latest
+    env_file: ./grafana/grafana.conf
+    container_name: avail-grafana
+    volumes:
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    ports:
+      - 9999:3000
+    networks:
+      - avail-monitoring
+    restart: always
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: avail-alertmanager
+    networks:
+      - avail-monitoring
+    ports:
+      - 9093:9093
+    volumes:
+      - type: bind
+        source: ./prometheus/alert_manager
+        target: /etc/alertmanager
+        read_only: true
+    command: [
+      '--config.file=/etc/alertmanager/alertmanager.yml',
+      '--log.level=debug',
+    ]
+    hostname: 'alertmanager'
+    restart: always
